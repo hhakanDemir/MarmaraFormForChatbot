@@ -28,19 +28,19 @@
             <form id="studentForm">
                 <div class="form-group">
                     <label for="adSoyad">Ad Soyad</label>
-                    <input type="text" id="adSoyad" name="adSoyad" required placeholder="Adinizi ve soyadinizi girin">
+                    <input type="text" id="adSoyad" name="adSoyad" required placeholder="Adinizi ve soyadinizi girin" maxlength="100" autocomplete="name">
                 </div>
                 <div class="form-group">
                     <label for="ogrenciNo">Ogrenci Numarasi</label>
-                    <input type="text" id="ogrenciNo" name="ogrenciNo" required placeholder="Ornek: 2024123456">
+                    <input type="text" id="ogrenciNo" name="ogrenciNo" required placeholder="Ornek: 2024123456" maxlength="20" pattern="[0-9]{6,20}" title="Ogrenci numarasi sadece rakamlardan olusmalidir">
                 </div>
                 <div class="form-group">
                     <label for="bolum">Bolum</label>
-                    <input type="text" id="bolum" name="bolum" required placeholder="Bolumunuzu girin">
+                    <input type="text" id="bolum" name="bolum" required placeholder="Bolumunuzu girin" maxlength="150">
                 </div>
                 <div class="form-group">
                     <label for="email">E-posta Adresi</label>
-                    <input type="email" id="email" name="email" required placeholder="ornek@marun.edu.tr">
+                    <input type="email" id="email" name="email" required placeholder="ornek@marun.edu.tr" maxlength="100" autocomplete="email">
                 </div>
                 <button type="submit" class="btn-start" id="btnStart">Sohbeti Baslat</button>
             </form>
@@ -62,7 +62,7 @@
             <div class="chat-input-area">
                 <form id="chatForm">
                     <div class="input-wrapper">
-                        <textarea id="questionInput" placeholder="Sorunuzu yazin..." rows="1" required></textarea>
+                        <textarea id="questionInput" placeholder="Sorunuzu yazin..." rows="1" required maxlength="1000"></textarea>
                         <button type="submit" class="btn-send" id="btnSend">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>

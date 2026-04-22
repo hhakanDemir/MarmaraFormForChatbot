@@ -13,6 +13,8 @@ const studentNameDisplay = document.getElementById('studentNameDisplay');
 let studentData = null;
 let sessionId = null;
 let isWaiting = false;
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 3000; // 3 saniye
 
 function generateSessionId() {
     return 'sid_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
@@ -46,6 +48,18 @@ chatForm.addEventListener('submit', function (e) {
 
     const question = questionInput.value.trim();
     if (!question || isWaiting) return;
+
+    const now = Date.now();
+    if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
+        addBotMessage('Lutfen birkaç saniye bekleyip tekrar deneyin.');
+        return;
+    }
+    lastRequestTime = now;
+
+    if (question.length > 1000) {
+        addBotMessage('Sorunuz cok uzun. Lutfen 1000 karakterden kisa bir soru yazin.');
+        return;
+    }
 
     addMessage(question, 'user');
     questionInput.value = '';
