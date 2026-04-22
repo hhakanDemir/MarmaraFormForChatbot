@@ -119,10 +119,20 @@ async function sendQuestion(question) {
             throw new Error('Sunucu hatasi: ' + response.status);
         }
 
-        const data = await response.json();
+        const raw = await response.text();
+        let answer = '';
 
-        // n8n'den gelen cevabi goster
-        const answer = data.output || data.response || data.text || data.message || data.cevap || JSON.stringify(data);
+        try {
+            const data = JSON.parse(raw);
+            answer = data.output || data.response || data.text || data.message || data.cevap || JSON.stringify(data);
+        } catch {
+            answer = raw;
+        }
+
+        if (!answer) {
+            throw new Error('Bos cevap alindi');
+        }
+
         addBotMessage(answer);
     } catch (error) {
         hideTypingIndicator();
