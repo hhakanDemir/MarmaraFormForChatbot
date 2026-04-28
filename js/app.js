@@ -139,7 +139,7 @@ async function sendQuestion(question) {
             throw new Error(data.error);
         }
 
-        addBotMessage(data.answer);
+        addBotMessage(data.output || data.answer);
     } catch (error) {
         hideTypingIndicator();
         addBotMessage('Uzgunum, bir hata olustu. Lutfen tekrar deneyin. (' + error.message + ')');
