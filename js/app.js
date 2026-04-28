@@ -133,13 +133,21 @@ async function sendQuestion(question) {
             throw new Error('Sunucu hatasi: ' + response.status);
         }
 
-        const data = await response.json();
+        const text = await response.text();
+        let answer;
 
-        if (data.error) {
-            throw new Error(data.error);
+        try {
+            const data = JSON.parse(text);
+            answer = data.output || data.answer || text;
+        } catch (e) {
+            answer = text;
         }
 
-        addBotMessage(data.output || data.answer);
+        if (!answer) {
+            throw new Error('Bos cevap alindi');
+        }
+
+        addBotMessage(answer);
     } catch (error) {
         hideTypingIndicator();
         addBotMessage('Uzgunum, bir hata olustu. Lutfen tekrar deneyin. (' + error.message + ')');
