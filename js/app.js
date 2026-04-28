@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://n8n.srv1537367.hstgr.cloud/webhook/277261d1-d138-4ef1-8356-aa283421089b';
+const API_URL = 'https://gilman.hadolem.com/webhook/277261d1-d138-4ef1-8356-aa283421089b';
 
 const infoPanel = document.getElementById('infoPanel');
 const chatPanel = document.getElementById('chatPanel');
@@ -121,7 +121,7 @@ async function sendQuestion(question) {
     };
 
     try {
-        const response = await fetch(WEBHOOK_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -133,21 +133,13 @@ async function sendQuestion(question) {
             throw new Error('Sunucu hatasi: ' + response.status);
         }
 
-        const raw = await response.text();
-        let answer = '';
+        const data = await response.json();
 
-        try {
-            const data = JSON.parse(raw);
-            answer = data.output || data.response || data.text || data.message || data.cevap || JSON.stringify(data);
-        } catch {
-            answer = raw;
+        if (data.error) {
+            throw new Error(data.error);
         }
 
-        if (!answer) {
-            throw new Error('Bos cevap alindi');
-        }
-
-        addBotMessage(answer);
+        addBotMessage(data.answer);
     } catch (error) {
         hideTypingIndicator();
         addBotMessage('Uzgunum, bir hata olustu. Lutfen tekrar deneyin. (' + error.message + ')');
