@@ -1,14 +1,14 @@
-const API_URL = 'https://gilman.hadolem.com/webhook/277261d1-d138-4ef1-8356-aa283421089b';
+const API_URL = "https://dzglulli4vstten844gtf71b.hadolem.com/api/chat";
 
-const infoPanel = document.getElementById('infoPanel');
-const chatPanel = document.getElementById('chatPanel');
-const studentForm = document.getElementById('studentForm');
-const chatForm = document.getElementById('chatForm');
-const chatMessages = document.getElementById('chatMessages');
-const questionInput = document.getElementById('questionInput');
-const btnSend = document.getElementById('btnSend');
-const btnReset = document.getElementById('btnReset');
-const studentNameDisplay = document.getElementById('studentNameDisplay');
+const infoPanel = document.getElementById("infoPanel");
+const chatPanel = document.getElementById("chatPanel");
+const studentForm = document.getElementById("studentForm");
+const chatForm = document.getElementById("chatForm");
+const chatMessages = document.getElementById("chatMessages");
+const questionInput = document.getElementById("questionInput");
+const btnSend = document.getElementById("btnSend");
+const btnReset = document.getElementById("btnReset");
+const studentNameDisplay = document.getElementById("studentNameDisplay");
 
 let studentData = null;
 let sessionId = null;
@@ -17,187 +17,198 @@ let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 3000; // 3 saniye
 
 function generateSessionId() {
-    return 'sid_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+  return (
+    "sid_" + Date.now() + "_" + Math.random().toString(36).substring(2, 11)
+  );
 }
 
 // Ogrenci formu gonderimi
-studentForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+studentForm.addEventListener("submit", function (e) {
+  e.preventDefault();
 
-    studentData = {
-        adSoyad: document.getElementById('adSoyad').value.trim(),
-        ogrenciNo: document.getElementById('ogrenciNo').value.trim(),
-        bolum: document.getElementById('bolum').value.trim(),
-        email: document.getElementById('email').value.trim()
-    };
+  studentData = {
+    adSoyad: document.getElementById("adSoyad").value.trim(),
+    ogrenciNo: document.getElementById("ogrenciNo").value.trim(),
+    bolum: document.getElementById("bolum").value.trim(),
+    email: document.getElementById("email").value.trim(),
+  };
 
-    sessionId = generateSessionId();
-    sessionStorage.setItem('sessionId', sessionId);
-    sessionStorage.setItem('studentData', JSON.stringify(studentData));
+  sessionId = generateSessionId();
+  sessionStorage.setItem("sessionId", sessionId);
+  sessionStorage.setItem("studentData", JSON.stringify(studentData));
 
-    studentNameDisplay.textContent = studentData.adSoyad + ' - ' + studentData.bolum;
+  studentNameDisplay.textContent =
+    studentData.adSoyad + " - " + studentData.bolum;
 
-    infoPanel.style.display = 'none';
-    chatPanel.classList.add('active');
-    questionInput.focus();
+  infoPanel.style.display = "none";
+  chatPanel.classList.add("active");
+  questionInput.focus();
 });
 
 // Soru gonderimi
-chatForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+chatForm.addEventListener("submit", function (e) {
+  e.preventDefault();
 
-    const question = questionInput.value.trim();
-    if (!question || isWaiting) return;
+  const question = questionInput.value.trim();
+  if (!question || isWaiting) return;
 
-    const now = Date.now();
-    if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
-        addBotMessage('Lutfen birkaç saniye bekleyip tekrar deneyin.');
-        return;
-    }
-    lastRequestTime = now;
+  const now = Date.now();
+  if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
+    addBotMessage("Lutfen birkaç saniye bekleyip tekrar deneyin.");
+    return;
+  }
+  lastRequestTime = now;
 
-    if (question.length > 1000) {
-        addBotMessage('Sorunuz cok uzun. Lutfen 1000 karakterden kisa bir soru yazin.');
-        return;
-    }
+  if (question.length > 1000) {
+    addBotMessage(
+      "Sorunuz cok uzun. Lutfen 1000 karakterden kisa bir soru yazin.",
+    );
+    return;
+  }
 
-    addMessage(question, 'user');
-    questionInput.value = '';
-    questionInput.style.height = 'auto';
+  addMessage(question, "user");
+  questionInput.value = "";
+  questionInput.style.height = "auto";
 
-    sendQuestion(question);
+  sendQuestion(question);
 });
 
 // Mesaj ekleme
 function addMessage(text, type) {
-    const div = document.createElement('div');
-    div.className = 'message ' + type + '-message';
-    div.innerHTML = '<div class="message-content">' + escapeHtml(text) + '</div>';
-    chatMessages.appendChild(div);
-    scrollToBottom();
+  const div = document.createElement("div");
+  div.className = "message " + type + "-message";
+  div.innerHTML = '<div class="message-content">' + escapeHtml(text) + "</div>";
+  chatMessages.appendChild(div);
+  scrollToBottom();
 }
 
 // Bot mesaji (HTML destekli)
 function addBotMessage(text) {
-    const div = document.createElement('div');
-    div.className = 'message bot-message';
-    div.innerHTML = '<div class="message-content">' + escapeHtml(text) + '</div>';
-    chatMessages.appendChild(div);
-    scrollToBottom();
+  const div = document.createElement("div");
+  div.className = "message bot-message";
+  div.innerHTML = '<div class="message-content">' + escapeHtml(text) + "</div>";
+  chatMessages.appendChild(div);
+  scrollToBottom();
 }
 
 // Yazma animasyonu
 function showTypingIndicator() {
-    const div = document.createElement('div');
-    div.className = 'message typing-indicator';
-    div.id = 'typingIndicator';
-    div.innerHTML = '<div class="message-content">' +
-        '<span class="typing-dot"></span>' +
-        '<span class="typing-dot"></span>' +
-        '<span class="typing-dot"></span>' +
-        '</div>';
-    chatMessages.appendChild(div);
-    scrollToBottom();
+  const div = document.createElement("div");
+  div.className = "message typing-indicator";
+  div.id = "typingIndicator";
+  div.innerHTML =
+    '<div class="message-content">' +
+    '<span class="typing-dot"></span>' +
+    '<span class="typing-dot"></span>' +
+    '<span class="typing-dot"></span>' +
+    "</div>";
+  chatMessages.appendChild(div);
+  scrollToBottom();
 }
 
 function hideTypingIndicator() {
-    const indicator = document.getElementById('typingIndicator');
-    if (indicator) indicator.remove();
+  const indicator = document.getElementById("typingIndicator");
+  if (indicator) indicator.remove();
 }
 
 // Webhook'a soru gonder
 async function sendQuestion(question) {
-    isWaiting = true;
-    btnSend.disabled = true;
-    showTypingIndicator();
+  isWaiting = true;
+  btnSend.disabled = true;
+  showTypingIndicator();
 
-    const payload = {
-        sessionId: sessionId,
-        adSoyad: studentData.adSoyad,
-        ogrenciNo: studentData.ogrenciNo,
-        bolum: studentData.bolum,
-        email: studentData.email,
-        soru: question
-    };
+  const payload = {
+    sessionId: sessionId,
+    adSoyad: studentData.adSoyad,
+    ogrenciNo: studentData.ogrenciNo,
+    bolum: studentData.bolum,
+    email: studentData.email,
+    soru: question,
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    hideTypingIndicator();
+
+    if (!response.ok) {
+      throw new Error("Sunucu hatasi: " + response.status);
+    }
+
+    const text = await response.text();
+    let answer;
 
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        hideTypingIndicator();
-
-        if (!response.ok) {
-            throw new Error('Sunucu hatasi: ' + response.status);
-        }
-
-        const text = await response.text();
-        let answer;
-
-        try {
-            const data = JSON.parse(text);
-            answer = data.output || data.answer || text;
-        } catch (e) {
-            answer = text;
-        }
-
-        if (!answer) {
-            throw new Error('Bos cevap alindi');
-        }
-
-        addBotMessage(answer);
-    } catch (error) {
-        hideTypingIndicator();
-        addBotMessage('Uzgunum, bir hata olustu. Lutfen tekrar deneyin. (' + error.message + ')');
-    } finally {
-        isWaiting = false;
-        btnSend.disabled = false;
-        questionInput.focus();
+      const data = JSON.parse(text);
+      answer = data.output || data.answer || text;
+    } catch (e) {
+      answer = text;
     }
+
+    if (!answer) {
+      throw new Error("Bos cevap alindi");
+    }
+
+    addBotMessage(answer);
+  } catch (error) {
+    hideTypingIndicator();
+    addBotMessage(
+      "Uzgunum, bir hata olustu. Lutfen tekrar deneyin. (" +
+        error.message +
+        ")",
+    );
+  } finally {
+    isWaiting = false;
+    btnSend.disabled = false;
+    questionInput.focus();
+  }
 }
 
 // Oturumu sifirla
-btnReset.addEventListener('click', function () {
-    sessionStorage.removeItem('sessionId');
-    sessionStorage.removeItem('studentData');
-    studentData = null;
-    sessionId = null;
+btnReset.addEventListener("click", function () {
+  sessionStorage.removeItem("sessionId");
+  sessionStorage.removeItem("studentData");
+  studentData = null;
+  sessionId = null;
 
-    chatPanel.classList.remove('active');
-    infoPanel.style.display = 'block';
-    studentForm.reset();
+  chatPanel.classList.remove("active");
+  infoPanel.style.display = "block";
+  studentForm.reset();
 
-    // Chat mesajlarini temizle (ilk bot mesaji haric)
-    chatMessages.innerHTML = '<div class="message bot-message">' +
-        '<div class="message-content">Merhaba! Marmara Universitesi ogrenci asistaniyim. ' +
-        'Yonetmelikler, akademik takvim ve diger konularda sorularinizi yanitlayabilirim. ' +
-        'Nasil yardimci olabilirim?</div></div>';
+  // Chat mesajlarini temizle (ilk bot mesaji haric)
+  chatMessages.innerHTML =
+    '<div class="message bot-message">' +
+    '<div class="message-content">Merhaba! Marmara Universitesi ogrenci asistaniyim. ' +
+    "Yonetmelikler, akademik takvim ve diger konularda sorularinizi yanitlayabilirim. " +
+    "Nasil yardimci olabilirim?</div></div>";
 });
 
 // Textarea otomatik yukseklik
-questionInput.addEventListener('input', function () {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+questionInput.addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 120) + "px";
 });
 
 // Enter ile gonder, Shift+Enter ile yeni satir
-questionInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        chatForm.dispatchEvent(new Event('submit'));
-    }
+questionInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    chatForm.dispatchEvent(new Event("submit"));
+  }
 });
 
 // Scroll
 function scrollToBottom() {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // HTML escape
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
