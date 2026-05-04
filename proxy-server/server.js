@@ -5,6 +5,9 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+// Coolify reverse proxy arkasinda calistigimiz icin gerekli
+app.set('trust proxy', 1);
+
 // --- Yapilandirma ---
 const PORT = process.env.PORT || 3000;
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
